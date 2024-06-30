@@ -76,7 +76,7 @@ function renderStudents(classIndex) {
     classe.eleves.forEach((eleve, studentIndex) => {
         const studentItem = document.createElement('li');
         studentItem.textContent = eleve.nom;
-        studentItem.addEventListener('click', () => renderDetentions(classIndex, studentIndex));
+        studentItem.addEventListener('click', () => renderStudentDetails(classIndex, studentIndex));
 
         const deleteStudentButton = createDeleteButton(() => {
             classe.eleves.splice(studentIndex, 1);
@@ -93,7 +93,7 @@ function renderStudents(classIndex) {
     app.appendChild(studentsList);
 }
 
-function renderDetentions(classIndex, studentIndex) {
+function renderStudentDetails(classIndex, studentIndex) {
     const classe = data.classes[classIndex];
     const eleve = classe.eleves[studentIndex];
 
@@ -115,7 +115,7 @@ function renderDetentions(classIndex, studentIndex) {
         eleve.heuresDeColle++;
         eleve.historiqueColles.push(`+1 heure de colle ${formattedDate}`);
         saveData();
-        renderDetentions(classIndex, studentIndex);
+        renderStudentDetails(classIndex, studentIndex);
     });
 
     const detentionHistoryTitle = document.createElement('h3');
