@@ -26,15 +26,40 @@ function render() {
 
         const title = document.createElement('h2');
         title.textContent = classe.nom;
-
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Supprimer';
-        deleteButton.onclick = () => {
-            data.classes.splice(index, 1);
-            saveData();
-            render();
+        title.onclick = () => {
+            toggleClassDetails(index);
         };
 
+        classDiv.appendChild(title);
+        app.appendChild(classDiv);
+    });
+
+    const addClassButton = document.createElement('button');
+    addClassButton.textContent = 'Ajouter Classe';
+    addClassButton.onclick = () => {
+        const className = prompt('Nom de la classe :');
+        if (className) {
+            data.classes.push({ nom: className, eleves: [], visible: false });
+            saveData();
+            render();
+        }
+    };
+
+    app.appendChild(addClassButton);
+}
+
+function toggleClassDetails(index) {
+    const classe = data.classes[index];
+    classe.visible = !classe.visible;
+    renderClassDetails(index);
+    saveData();
+}
+
+function renderClassDetails(index) {
+    const classe = data.classes[index];
+    const classDiv = document.createElement('div');
+
+    if (classe.visible) {
         const addStudentButton = document.createElement('button');
         addStudentButton.textContent = 'Ajouter Élève';
         addStudentButton.onclick = () => {
@@ -46,9 +71,7 @@ function render() {
             }
         };
 
-        classDiv.appendChild(title);
         classDiv.appendChild(addStudentButton);
-        classDiv.appendChild(deleteButton);
 
         classe.eleves.forEach((eleve, idx) => {
             const studentDiv = document.createElement('div');
@@ -74,22 +97,10 @@ function render() {
             studentDiv.appendChild(removeHourButton);
             classDiv.appendChild(studentDiv);
         });
+    }
 
-        app.appendChild(classDiv);
-    });
-
-    const addClassButton = document.createElement('button');
-    addClassButton.textContent = 'Ajouter Classe';
-    addClassButton.onclick = () => {
-        const className = prompt('Nom de la classe :');
-        if (className) {
-            data.classes.push({ nom: className, eleves: [] });
-            saveData();
-            render();
-        }
-    };
-
-    app.appendChild(addClassButton);
+    const classContainer = app.children[index];
+    classContainer.appendChild(classDiv);
 }
 
 // Charger les données au démarrage
