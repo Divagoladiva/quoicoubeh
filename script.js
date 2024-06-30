@@ -19,7 +19,7 @@ function render() {
     app.innerHTML = '<h1>Gestion des classes</h1>';
 
     // Affichage des classes
-    data.classes.forEach((classe, index) => {
+    data.classes.forEach((classe, classIndex) => {
         const classDiv = document.createElement('div');
         classDiv.classList.add('class');
 
@@ -27,15 +27,15 @@ function render() {
         title.textContent = classe.nom;
 
         // Gestion du clic pour afficher les détails de la classe
-        title.onclick = () => renderClassDetails(index);
+        title.addEventListener('click', () => renderClassDetails(classIndex));
 
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'Supprimer';
-        deleteButton.onclick = () => {
-            data.classes.splice(index, 1);
+        deleteButton.addEventListener('click', () => {
+            data.classes.splice(classIndex, 1);
             saveData();
             render();
-        };
+        });
 
         classDiv.appendChild(title);
         classDiv.appendChild(deleteButton);
@@ -45,14 +45,14 @@ function render() {
     // Bouton pour ajouter une nouvelle classe
     const addClassButton = document.createElement('button');
     addClassButton.textContent = 'Ajouter Classe';
-    addClassButton.onclick = () => {
+    addClassButton.addEventListener('click', () => {
         const className = prompt('Nom de la classe :');
         if (className) {
             data.classes.push({ nom: className, eleves: [] });
             saveData();
             render();
         }
-    };
+    });
 
     app.appendChild(addClassButton);
 }
@@ -65,19 +65,19 @@ function renderClassDetails(classIndex) {
     // Bouton retour
     const backButton = document.createElement('button');
     backButton.textContent = 'Retour';
-    backButton.onclick = render;
+    backButton.addEventListener('click', render);
 
     // Bouton pour ajouter un élève
     const addStudentButton = document.createElement('button');
     addStudentButton.textContent = 'Ajouter Élève';
-    addStudentButton.onclick = () => {
+    addStudentButton.addEventListener('click', () => {
         const studentName = prompt('Nom de l\'élève :');
         if (studentName) {
             classe.eleves.push({ nom: studentName, heuresDeColle: 0 });
             saveData();
             renderClassDetails(classIndex);
         }
-    };
+    });
 
     // Liste des élèves
     const studentsList = document.createElement('div');
@@ -92,7 +92,7 @@ function renderClassDetails(classIndex) {
         studentName.classList.add('student-name');
 
         // Gestion du clic sur un élève pour afficher les détails
-        studentName.onclick = () => renderStudentDetails(classIndex, studentIndex);
+        studentName.addEventListener('click', () => renderStudentDetails(classIndex, studentIndex));
 
         studentDiv.appendChild(studentName);
 
@@ -113,7 +113,7 @@ function renderStudentDetails(classIndex, studentIndex) {
     // Bouton retour
     const backButton = document.createElement('button');
     backButton.textContent = 'Retour';
-    backButton.onclick = () => renderClassDetails(classIndex);
+    backButton.addEventListener('click', () => renderClassDetails(classIndex));
 
     // Affichage des heures de colle et boutons d'ajout/suppression
     const detentionInfo = document.createElement('div');
@@ -121,29 +121,29 @@ function renderStudentDetails(classIndex, studentIndex) {
 
     const addDetentionButton = document.createElement('button');
     addDetentionButton.textContent = '+1h';
-    addDetentionButton.onclick = () => {
+    addDetentionButton.addEventListener('click', () => {
         eleve.heuresDeColle++;
         saveData();
         renderStudentDetails(classIndex, studentIndex);
-    };
+    });
 
     const removeDetentionButton = document.createElement('button');
     removeDetentionButton.textContent = '-1h';
-    removeDetentionButton.onclick = () => {
+    removeDetentionButton.addEventListener('click', () => {
         if (eleve.heuresDeColle > 0) {
             eleve.heuresDeColle--;
             saveData();
             renderStudentDetails(classIndex, studentIndex);
         }
-    };
+    });
 
     const deleteStudentButton = document.createElement('button');
     deleteStudentButton.textContent = 'Supprimer Élève';
-    deleteStudentButton.onclick = () => {
+    deleteStudentButton.addEventListener('click', () => {
         classe.eleves.splice(studentIndex, 1);
         saveData();
         renderClassDetails(classIndex);
-    };
+    });
 
     app.appendChild(backButton);
     app.appendChild(detentionInfo);
