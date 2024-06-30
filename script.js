@@ -15,34 +15,30 @@ function saveData() {
     localStorage.setItem('gestionClasses', JSON.stringify(data));
 }
 
-function render() {
+function renderClasses() {
     app.innerHTML = '<h1>Gestion des classes</h1>';
 
-    // Affichage des classes
     data.classes.forEach((classe, classIndex) => {
         const classDiv = document.createElement('div');
         classDiv.classList.add('class');
 
-        const title = document.createElement('h2');
-        title.textContent = classe.nom;
+        const className = document.createElement('h2');
+        className.textContent = classe.nom;
+        className.addEventListener('click', () => renderStudents(classIndex));
 
-        // Gestion du clic pour afficher les détails de la classe
-        title.addEventListener('click', () => renderClassDetails(classIndex));
-
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Supprimer';
-        deleteButton.addEventListener('click', () => {
+        const deleteClassButton = document.createElement('button');
+        deleteClassButton.textContent = 'Supprimer Classe';
+        deleteClassButton.addEventListener('click', () => {
             data.classes.splice(classIndex, 1);
             saveData();
-            render();
+            renderClasses();
         });
 
-        classDiv.appendChild(title);
-        classDiv.appendChild(deleteButton);
+        classDiv.appendChild(className);
+        classDiv.appendChild(deleteClassButton);
         app.appendChild(classDiv);
     });
 
-    // Bouton pour ajouter une nouvelle classe
     const addClassButton = document.createElement('button');
     addClassButton.textContent = 'Ajouter Classe';
     addClassButton.addEventListener('click', () => {
@@ -50,24 +46,22 @@ function render() {
         if (className) {
             data.classes.push({ nom: className, eleves: [] });
             saveData();
-            render();
+            renderClasses();
         }
     });
 
     app.appendChild(addClassButton);
 }
 
-function renderClassDetails(classIndex) {
+function renderStudents(classIndex) {
     const classe = data.classes[classIndex];
 
     app.innerHTML = `<h1>${classe.nom}</h1>`;
 
-    // Bouton retour
     const backButton = document.createElement('button');
-    backButton.textContent = 'Retour';
-    backButton.addEventListener('click', render);
+    backButton.textContent = 'Retour aux Classes';
+    backButton.addEventListener('click', renderClasses);
 
-    // Bouton pour ajouter un élève
     const addStudentButton = document.createElement('button');
     addStudentButton.textContent = 'Ajouter Élève';
     addStudentButton.addEventListener('click', () => {
@@ -75,28 +69,16 @@ function renderClassDetails(classIndex) {
         if (studentName) {
             classe.eleves.push({ nom: studentName, heuresDeColle: 0, historiqueColles: [] });
             saveData();
-            renderClassDetails(classIndex);
+            renderStudents(classIndex);
         }
     });
 
-    // Liste des élèves
-    const studentsList = document.createElement('div');
-    studentsList.classList.add('students-list');
-
+    const studentsList = document.createElement('ul');
     classe.eleves.forEach((eleve, studentIndex) => {
-        const studentDiv = document.createElement('div');
-        studentDiv.classList.add('student-item');
-
-        const studentName = document.createElement('span');
-        studentName.textContent = eleve.nom;
-        studentName.classList.add('student-name');
-
-        // Gestion du clic sur un élève pour afficher les détails
-        studentName.addEventListener('click', () => renderStudentDetails(classIndex, studentIndex));
-
-        studentDiv.appendChild(studentName);
-
-        studentsList.appendChild(studentDiv);
+        const studentItem = document.createElement('li');
+        studentItem.textContent = eleve.nom;
+        studentItem.addEventListener('click', () => renderDetentions(classIndex, studentIndex));
+        studentsList.appendChild(studentItem);
     });
 
     app.appendChild(backButton);
@@ -104,27 +86,21 @@ function renderClassDetails(classIndex) {
     app.appendChild(studentsList);
 }
 
-function renderStudentDetails(classIndex, studentIndex) {
+function renderDetentions(classIndex, studentIndex) {
     const classe = data.classes[classIndex];
     const eleve = classe.eleves[studentIndex];
 
     app.innerHTML = `<h1>${eleve.nom}</h1>`;
 
-    // Bouton retour
     const backButton = document.createElement('button');
-    backButton.textContent = 'Retour';
-    backButton.addEventListener('click', () => renderClassDetails(classIndex));
+    backButton.textContent = 'Retour aux Élèves';
+    backButton.addEventListener('click', () => renderStudents(classIndex));
 
-    // Affichage des heures de colle et boutons d'ajout/suppression
-    const detentionInfo = document.createElement('div');
+    const detentionInfo = document.createElement('p');
     detentionInfo.textContent = `Heures de colle : ${eleve.heuresDeColle}`;
-    detentionInfo.classList.add('detention-info');
-
-    const optionsContainer = document.createElement('div');
-    optionsContainer.classList.add('options-container');
 
     const addDetentionButton = document.createElement('button');
-    addDetentionButton.textContent = '+1h';
+    addDetentionButton.textContent = '+1h de colle';
     addDetentionButton.addEventListener('click', () => {
         const currentDate = new Date();
         const formattedDate = `${currentDate.getHours()}:${currentDate.getMinutes()} ${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
@@ -132,48 +108,25 @@ function renderStudentDetails(classIndex, studentIndex) {
         eleve.heuresDeColle++;
         eleve.historiqueColles.push(`+1 heure de colle ${formattedDate}`);
         saveData();
-        renderStudentDetails(classIndex, studentIndex);
+        renderDetentions(classIndex, studentIndex);
     });
 
-    const removeDetentionButton = document.createElement('button');
-    removeDetentionButton.textContent = '-1h';
-    removeDetentionButton.addEventListener('click', () => {
-        if (eleve.heuresDeColle > 0) {
-            eleve.heuresDeColle--;
-            saveData();
-            renderStudentDetails(classIndex, studentIndex);
-        }
-    });
+    const detentionHistoryTitle = document.createElement('h3');
+    detentionHistoryTitle.textContent = 'Historique des heures de colle';
 
-    const deleteStudentButton = document.createElement('button');
-    deleteStudentButton.textContent = 'Supprimer Élève';
-    deleteStudentButton.addEventListener('click', () => {
-        classe.eleves.splice(studentIndex, 1);
-        saveData();
-        renderClassDetails(classIndex);
-    });
-
-    optionsContainer.appendChild(addDetentionButton);
-    optionsContainer.appendChild(removeDetentionButton);
-    optionsContainer.appendChild(deleteStudentButton);
-
-    // Affichage de l'historique des heures de colle
-    const historiqueTitle = document.createElement('h3');
-    historiqueTitle.textContent = 'Historique des heures de colle';
-
-    const historiqueList = document.createElement('ul');
+    const detentionHistoryList = document.createElement('ul');
     eleve.historiqueColles.forEach(colle => {
         const colleItem = document.createElement('li');
         colleItem.textContent = colle;
-        historiqueList.appendChild(colleItem);
+        detentionHistoryList.appendChild(colleItem);
     });
 
     app.appendChild(backButton);
     app.appendChild(detentionInfo);
-    app.appendChild(optionsContainer);
-    app.appendChild(historiqueTitle);
-    app.appendChild(historiqueList);
+    app.appendChild(addDetentionButton);
+    app.appendChild(detentionHistoryTitle);
+    app.appendChild(detentionHistoryList);
 }
 
 loadData();
-render();
+renderClasses();
