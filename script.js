@@ -26,10 +26,7 @@ function renderClasses() {
         className.textContent = classe.nom;
         className.addEventListener('click', () => renderStudents(classIndex));
 
-        const deleteClassButton = document.createElement('button');
-        deleteClassButton.textContent = 'Supprimer';
-        deleteClassButton.classList.add('delete-btn');
-        deleteClassButton.addEventListener('click', () => {
+        const deleteClassButton = createDeleteButton(() => {
             data.classes.splice(classIndex, 1);
             saveData();
             renderClasses();
@@ -38,25 +35,6 @@ function renderClasses() {
         classDiv.appendChild(className);
         classDiv.appendChild(deleteClassButton);
 
-        const studentsList = document.createElement('ul');
-        classe.eleves.forEach((eleve, studentIndex) => {
-            const studentItem = document.createElement('li');
-            studentItem.textContent = eleve.nom;
-
-            const deleteStudentButton = document.createElement('button');
-            deleteStudentButton.textContent = '-';
-            deleteStudentButton.classList.add('delete-btn');
-            deleteStudentButton.addEventListener('click', () => {
-                classe.eleves.splice(studentIndex, 1);
-                saveData();
-                renderStudents(classIndex);
-            });
-
-            studentItem.appendChild(deleteStudentButton);
-            studentsList.appendChild(studentItem);
-        });
-
-        classDiv.appendChild(studentsList);
         app.appendChild(classDiv);
     });
 
@@ -99,10 +77,7 @@ function renderStudents(classIndex) {
         const studentItem = document.createElement('li');
         studentItem.textContent = eleve.nom;
 
-        const deleteStudentButton = document.createElement('button');
-        deleteStudentButton.textContent = '-';
-        deleteStudentButton.classList.add('delete-btn');
-        deleteStudentButton.addEventListener('click', () => {
+        const deleteStudentButton = createDeleteButton(() => {
             classe.eleves.splice(studentIndex, 1);
             saveData();
             renderStudents(classIndex);
@@ -115,6 +90,14 @@ function renderStudents(classIndex) {
     app.appendChild(backButton);
     app.appendChild(addStudentButton);
     app.appendChild(studentsList);
+}
+
+function createDeleteButton(callback) {
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Supprimer';
+    deleteButton.classList.add('delete-btn');
+    deleteButton.addEventListener('click', callback);
+    return deleteButton;
 }
 
 loadData();
