@@ -16,12 +16,7 @@ function saveData() {
 }
 
 function render() {
-    app.innerHTML = '';
-
-    // Header
-    const header = document.createElement('h1');
-    header.textContent = 'Gestion des classes';
-    app.appendChild(header);
+    app.innerHTML = '<h1>Gestion des classes</h1>';
 
     data.classes.forEach((classe, index) => {
         const classDiv = document.createElement('div');
@@ -29,30 +24,18 @@ function render() {
 
         const title = document.createElement('h2');
         title.textContent = classe.nom;
+        title.onclick = () => renderClassDetails(index);
 
-        // Gestion du clic pour afficher ou supprimer
-        title.onclick = () => {
-            let clickCount = 0;
-            const clickHandler = () => {
-                clickCount++;
-                if (clickCount === 1) {
-                    setTimeout(() => {
-                        if (clickCount === 1) {
-                            renderClassDetails(index);
-                        }
-                        clickCount = 0;
-                    }, 300);
-                }
-            };
-            title.ondblclick = () => {
-                data.classes.splice(index, 1);
-                saveData();
-                render();
-            };
-            clickHandler();
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Supprimer';
+        deleteButton.onclick = () => {
+            data.classes.splice(index, 1);
+            saveData();
+            render();
         };
 
         classDiv.appendChild(title);
+        classDiv.appendChild(deleteButton);
         app.appendChild(classDiv);
     });
 
@@ -72,14 +55,11 @@ function render() {
 
 function renderClassDetails(index) {
     const classe = data.classes[index];
-    app.innerHTML = '';
+    app.innerHTML = `<h1>${classe.nom}</h1>`;
 
     const backButton = document.createElement('button');
     backButton.textContent = 'Retour';
     backButton.onclick = render;
-
-    const classTitle = document.createElement('h2');
-    classTitle.textContent = classe.nom;
 
     const addStudentButton = document.createElement('button');
     addStudentButton.textContent = 'Ajouter Élève';
@@ -93,14 +73,12 @@ function renderClassDetails(index) {
     };
 
     app.appendChild(backButton);
-    app.appendChild(classTitle);
     app.appendChild(addStudentButton);
 
     classe.eleves.forEach((eleve, idx) => {
         const studentDiv = document.createElement('div');
         studentDiv.textContent = `${eleve.nom} - Heures de colle : ${eleve.heuresDeColle}`;
 
-        // Bouton pour ajouter et enlever des heures de colle
         const addHourButton = document.createElement('button');
         addHourButton.textContent = '+1h';
         addHourButton.onclick = () => {
@@ -117,7 +95,6 @@ function renderClassDetails(index) {
             renderClassDetails(index);
         };
 
-        // Bouton pour supprimer un élève
         const deleteStudentButton = document.createElement('button');
         deleteStudentButton.textContent = 'Supprimer';
         deleteStudentButton.onclick = () => {
@@ -135,4 +112,3 @@ function renderClassDetails(index) {
 
 loadData();
 render();
-
