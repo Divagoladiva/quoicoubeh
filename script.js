@@ -4,7 +4,6 @@ let data = {
     classes: []
 };
 
-// Charger les données depuis le localStorage
 function loadData() {
     const savedData = localStorage.getItem('gestionClasses');
     if (savedData) {
@@ -12,7 +11,6 @@ function loadData() {
     }
 }
 
-// Sauvegarder les données dans le localStorage
 function saveData() {
     localStorage.setItem('gestionClasses', JSON.stringify(data));
 }
@@ -27,7 +25,7 @@ function render() {
         const title = document.createElement('h2');
         title.textContent = classe.nom;
         title.onclick = () => {
-            toggleClassDetails(index);
+            renderClassDetails(index);
         };
 
         classDiv.appendChild(title);
@@ -39,7 +37,7 @@ function render() {
     addClassButton.onclick = () => {
         const className = prompt('Nom de la classe :');
         if (className) {
-            data.classes.push({ nom: className, eleves: [], visible: false });
+            data.classes.push({ nom: className, eleves: [] });
             saveData();
             render();
         }
@@ -48,61 +46,58 @@ function render() {
     app.appendChild(addClassButton);
 }
 
-function toggleClassDetails(index) {
-    const classe = data.classes[index];
-    classe.visible = !classe.visible;
-    renderClassDetails(index);
-    saveData();
-}
-
 function renderClassDetails(index) {
     const classe = data.classes[index];
-    const classDiv = document.createElement('div');
+    app.innerHTML = '';
 
-    if (classe.visible) {
-        const addStudentButton = document.createElement('button');
-        addStudentButton.textContent = 'Ajouter Élève';
-        addStudentButton.onclick = () => {
-            const studentName = prompt('Nom de l\'élève :');
-            if (studentName) {
-                classe.eleves.push({ nom: studentName, heuresDeColle: 0 });
-                saveData();
-                render();
-            }
+    const backButton = document.createElement('button');
+    backButton.textContent = 'Retour';
+    backButton.onclick = render;
+
+    const classTitle = document.createElement('h2');
+    classTitle.textContent = classe.nom;
+
+    const addStudentButton = document.createElement('button');
+    addStudentButton.textContent = 'Ajouter Élève';
+    addStudentButton.onclick = () => {
+        const studentName = prompt('Nom de l\'élève :');
+        if (studentName) {
+            classe.eleves.push({ nom: studentName, heuresDeColle: 0 });
+            saveData();
+            renderClassDetails(index);
+        }
+    };
+
+    app.appendChild(backButton);
+    app.appendChild(classTitle);
+    app.appendChild(addStudentButton);
+
+    classe.eleves.forEach((eleve, idx) => {
+        const studentDiv = document.createElement('div');
+        studentDiv.textContent = `${eleve.nom} - Heures de colle : ${eleve.heuresDeColle}`;
+
+        const addHourButton = document.createElement('button');
+        addHourButton.textContent = '+1h';
+        addHourButton.onclick = () => {
+            eleve.heuresDeColle++;
+            saveData();
+            renderClassDetails(index);
         };
 
-        classDiv.appendChild(addStudentButton);
+        const removeHourButton = document.createElement('button');
+        removeHourButton.textContent = '-1h';
+        removeHourButton.onclick = () => {
+            if (eleve.heuresDeColle > 0) eleve.heuresDeColle--;
+            saveData();
+            renderClassDetails(index);
+        };
 
-        classe.eleves.forEach((eleve, idx) => {
-            const studentDiv = document.createElement('div');
-            studentDiv.textContent = `${eleve.nom} - Heures de colle : ${eleve.heuresDeColle}`;
-
-            const addHourButton = document.createElement('button');
-            addHourButton.textContent = '+1h';
-            addHourButton.onclick = () => {
-                eleve.heuresDeColle++;
-                saveData();
-                render();
-            };
-
-            const removeHourButton = document.createElement('button');
-            removeHourButton.textContent = '-1h';
-            removeHourButton.onclick = () => {
-                if (eleve.heuresDeColle > 0) eleve.heuresDeColle--;
-                saveData();
-                render();
-            };
-
-            studentDiv.appendChild(addHourButton);
-            studentDiv.appendChild(removeHourButton);
-            classDiv.appendChild(studentDiv);
-        });
-    }
-
-    const classContainer = app.children[index];
-    classContainer.appendChild(classDiv);
+        studentDiv.appendChild(addHourButton);
+        studentDiv.appendChild(removeHourButton);
+        app.appendChild(studentDiv);
+    });
 }
 
-// Charger les données au démarrage
 loadData();
 render();
+
