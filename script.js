@@ -118,13 +118,17 @@ function renderStudentDetails(classIndex, studentIndex) {
     // Affichage des heures de colle et boutons d'ajout/suppression
     const detentionInfo = document.createElement('div');
     detentionInfo.textContent = `Heures de colle : ${eleve.heuresDeColle}`;
+    detentionInfo.classList.add('detention-info');
+
+    const optionsContainer = document.createElement('div');
+    optionsContainer.classList.add('options-container');
 
     const addDetentionButton = document.createElement('button');
     addDetentionButton.textContent = '+1h';
     addDetentionButton.addEventListener('click', () => {
         eleve.heuresDeColle++;
         saveData();
-        renderStudentDetails(classIndex, studentIndex);
+        detentionInfo.textContent = `Heures de colle : ${eleve.heuresDeColle}`;
     });
 
     const removeDetentionButton = document.createElement('button');
@@ -133,7 +137,7 @@ function renderStudentDetails(classIndex, studentIndex) {
         if (eleve.heuresDeColle > 0) {
             eleve.heuresDeColle--;
             saveData();
-            renderStudentDetails(classIndex, studentIndex);
+            detentionInfo.textContent = `Heures de colle : ${eleve.heuresDeColle}`;
         }
     });
 
@@ -145,11 +149,13 @@ function renderStudentDetails(classIndex, studentIndex) {
         renderClassDetails(classIndex);
     });
 
+    optionsContainer.appendChild(addDetentionButton);
+    optionsContainer.appendChild(removeDetentionButton);
+    optionsContainer.appendChild(deleteStudentButton);
+
     app.appendChild(backButton);
     app.appendChild(detentionInfo);
-    app.appendChild(addDetentionButton);
-    app.appendChild(removeDetentionButton);
-    app.appendChild(deleteStudentButton);
+    app.appendChild(optionsContainer);
 }
 
 loadData();
