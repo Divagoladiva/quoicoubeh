@@ -18,12 +18,15 @@ function saveData() {
 function render() {
     app.innerHTML = '<h1>Gestion des classes</h1>';
 
+    // Affichage des classes
     data.classes.forEach((classe, index) => {
         const classDiv = document.createElement('div');
         classDiv.classList.add('class');
 
         const title = document.createElement('h2');
         title.textContent = classe.nom;
+
+        // Gestion du clic pour afficher les détails de la classe
         title.onclick = () => renderClassDetails(index);
 
         const deleteButton = document.createElement('button');
@@ -39,6 +42,7 @@ function render() {
         app.appendChild(classDiv);
     });
 
+    // Bouton pour ajouter une nouvelle classe
     const addClassButton = document.createElement('button');
     addClassButton.textContent = 'Ajouter Classe';
     addClassButton.onclick = () => {
@@ -53,14 +57,17 @@ function render() {
     app.appendChild(addClassButton);
 }
 
-function renderClassDetails(index) {
-    const classe = data.classes[index];
+function renderClassDetails(classIndex) {
+    const classe = data.classes[classIndex];
+
     app.innerHTML = `<h1>${classe.nom}</h1>`;
 
+    // Bouton retour
     const backButton = document.createElement('button');
     backButton.textContent = 'Retour';
     backButton.onclick = render;
 
+    // Bouton pour ajouter un élève
     const addStudentButton = document.createElement('button');
     addStudentButton.textContent = 'Ajouter Élève';
     addStudentButton.onclick = () => {
@@ -68,48 +75,66 @@ function renderClassDetails(index) {
         if (studentName) {
             classe.eleves.push({ nom: studentName, heuresDeColle: 0 });
             saveData();
-            renderClassDetails(index);
+            renderClassDetails(classIndex);
         }
     };
 
+    // Liste des élèves
+    const studentsList = document.createElement('div');
+    studentsList.classList.add('students-list');
+
+    classe.eleves.forEach((eleve, studentIndex) => {
+        const studentDiv = document.createElement('div');
+        studentDiv.classList.add('student-item');
+
+        const studentName = document.createElement('span');
+        studentName.textContent = eleve.nom;
+        studentName.classList.add('student-name');
+
+        // Gestion du clic sur un élève pour afficher les détails
+        studentName.onclick = () => renderStudentDetails(classIndex, studentIndex);
+
+        studentDiv.appendChild(studentName);
+
+        studentsList.appendChild(studentDiv);
+    });
+
     app.appendChild(backButton);
     app.appendChild(addStudentButton);
-
-    classe.eleves.forEach((eleve, idx) => {
-        const studentDiv = document.createElement('div');
-        studentDiv.textContent = `${eleve.nom} - Heures de colle : ${eleve.heuresDeColle}`;
-        studentDiv.onclick = () => renderStudentDetails(index, idx);
-
-        app.appendChild(studentDiv);
-    });
+    app.appendChild(studentsList);
 }
 
 function renderStudentDetails(classIndex, studentIndex) {
     const classe = data.classes[classIndex];
     const eleve = classe.eleves[studentIndex];
+
     app.innerHTML = `<h1>${eleve.nom}</h1>`;
 
+    // Bouton retour
     const backButton = document.createElement('button');
     backButton.textContent = 'Retour';
     backButton.onclick = () => renderClassDetails(classIndex);
 
-    const detailsDiv = document.createElement('div');
-    detailsDiv.textContent = `Heures de colle : ${eleve.heuresDeColle}`;
+    // Affichage des heures de colle et boutons d'ajout/suppression
+    const detentionInfo = document.createElement('div');
+    detentionInfo.textContent = `Heures de colle : ${eleve.heuresDeColle}`;
 
-    const addHourButton = document.createElement('button');
-    addHourButton.textContent = '+1h';
-    addHourButton.onclick = () => {
+    const addDetentionButton = document.createElement('button');
+    addDetentionButton.textContent = '+1h';
+    addDetentionButton.onclick = () => {
         eleve.heuresDeColle++;
         saveData();
         renderStudentDetails(classIndex, studentIndex);
     };
 
-    const removeHourButton = document.createElement('button');
-    removeHourButton.textContent = '-1h';
-    removeHourButton.onclick = () => {
-        if (eleve.heuresDeColle > 0) eleve.heuresDeColle--;
-        saveData();
-        renderStudentDetails(classIndex, studentIndex);
+    const removeDetentionButton = document.createElement('button');
+    removeDetentionButton.textContent = '-1h';
+    removeDetentionButton.onclick = () => {
+        if (eleve.heuresDeColle > 0) {
+            eleve.heuresDeColle--;
+            saveData();
+            renderStudentDetails(classIndex, studentIndex);
+        }
     };
 
     const deleteStudentButton = document.createElement('button');
@@ -121,15 +146,11 @@ function renderStudentDetails(classIndex, studentIndex) {
     };
 
     app.appendChild(backButton);
-    app.appendChild(detailsDiv);
-    app.appendChild(addHourButton);
-    app.appendChild(removeHourButton);
+    app.appendChild(detentionInfo);
+    app.appendChild(addDetentionButton);
+    app.appendChild(removeDetentionButton);
     app.appendChild(deleteStudentButton);
 }
-
-loadData();
-render();
-
 
 loadData();
 render();
