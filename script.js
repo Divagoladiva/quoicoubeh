@@ -92,5 +92,6 @@ function render() {
     app.appendChild(addClassButton);
 }
 
+// Charger les données au démarrage
 loadData();
 render();
