@@ -27,7 +27,8 @@ function renderClasses() {
         className.addEventListener('click', () => renderStudents(classIndex));
 
         const deleteClassButton = document.createElement('button');
-        deleteClassButton.textContent = 'Supprimer Classe';
+        deleteClassButton.textContent = 'Supprimer';
+        deleteClassButton.classList.add('delete-btn');
         deleteClassButton.addEventListener('click', () => {
             data.classes.splice(classIndex, 1);
             saveData();
@@ -44,7 +45,7 @@ function renderClasses() {
 
             const deleteStudentButton = document.createElement('button');
             deleteStudentButton.textContent = '-';
-            deleteStudentButton.classList.add('delete-student-btn');
+            deleteStudentButton.classList.add('delete-btn');
             deleteStudentButton.addEventListener('click', () => {
                 classe.eleves.splice(studentIndex, 1);
                 saveData();
@@ -100,7 +101,7 @@ function renderStudents(classIndex) {
 
         const deleteStudentButton = document.createElement('button');
         deleteStudentButton.textContent = '-';
-        deleteStudentButton.classList.add('delete-student-btn');
+        deleteStudentButton.classList.add('delete-btn');
         deleteStudentButton.addEventListener('click', () => {
             classe.eleves.splice(studentIndex, 1);
             saveData();
