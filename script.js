@@ -4,6 +4,19 @@ let data = {
     classes: []
 };
 
+// Charger les données depuis le localStorage
+function loadData() {
+    const savedData = localStorage.getItem('gestionClasses');
+    if (savedData) {
+        data = JSON.parse(savedData);
+    }
+}
+
+// Sauvegarder les données dans le localStorage
+function saveData() {
+    localStorage.setItem('gestionClasses', JSON.stringify(data));
+}
+
 function render() {
     app.innerHTML = '';
 
@@ -18,6 +31,7 @@ function render() {
         deleteButton.textContent = 'Supprimer';
         deleteButton.onclick = () => {
             data.classes.splice(index, 1);
+            saveData();
             render();
         };
 
@@ -27,6 +41,7 @@ function render() {
             const studentName = prompt('Nom de l\'élève :');
             if (studentName) {
                 classe.eleves.push({ nom: studentName, heuresDeColle: 0 });
+                saveData();
                 render();
             }
         };
@@ -43,6 +58,7 @@ function render() {
             addHourButton.textContent = '+1h';
             addHourButton.onclick = () => {
                 eleve.heuresDeColle++;
+                saveData();
                 render();
             };
 
@@ -50,6 +66,7 @@ function render() {
             removeHourButton.textContent = '-1h';
             removeHourButton.onclick = () => {
                 if (eleve.heuresDeColle > 0) eleve.heuresDeColle--;
+                saveData();
                 render();
             };
 
@@ -67,6 +84,7 @@ function render() {
         const className = prompt('Nom de la classe :');
         if (className) {
             data.classes.push({ nom: className, eleves: [] });
+            saveData();
             render();
         }
     };
@@ -74,4 +92,5 @@ function render() {
     app.appendChild(addClassButton);
 }
 
+loadData();
 render();
