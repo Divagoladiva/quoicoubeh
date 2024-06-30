@@ -77,8 +77,23 @@ function renderStudents(classIndex) {
     classe.eleves.forEach((eleve, studentIndex) => {
         const studentItem = document.createElement('li');
         studentItem.textContent = eleve.nom;
+
+        const deleteStudentButton = document.createElement('button');
+        deleteStudentButton.textContent = 'Supprimer Élève';
+        deleteStudentButton.classList.add('delete-student-btn');
+        deleteStudentButton.addEventListener('click', () => {
+            classe.eleves.splice(studentIndex, 1);
+            saveData();
+            renderStudents(classIndex);
+        });
+
+        const studentDetailsContainer = document.createElement('div');
+        studentDetailsContainer.classList.add('student-details');
+
         studentItem.addEventListener('click', () => renderDetentions(classIndex, studentIndex));
-        studentsList.appendChild(studentItem);
+        studentDetailsContainer.appendChild(studentItem);
+        studentDetailsContainer.appendChild(deleteStudentButton);
+        studentsList.appendChild(studentDetailsContainer);
     });
 
     app.appendChild(backButton);
