@@ -36,6 +36,26 @@ function renderClasses() {
 
         classDiv.appendChild(className);
         classDiv.appendChild(deleteClassButton);
+
+        const studentsList = document.createElement('ul');
+        classe.eleves.forEach((eleve, studentIndex) => {
+            const studentItem = document.createElement('li');
+            studentItem.textContent = eleve.nom;
+
+            const deleteStudentButton = document.createElement('button');
+            deleteStudentButton.textContent = '-';
+            deleteStudentButton.classList.add('delete-student-btn');
+            deleteStudentButton.addEventListener('click', () => {
+                classe.eleves.splice(studentIndex, 1);
+                saveData();
+                renderStudents(classIndex);
+            });
+
+            studentItem.appendChild(deleteStudentButton);
+            studentsList.appendChild(studentItem);
+        });
+
+        classDiv.appendChild(studentsList);
         app.appendChild(classDiv);
     });
 
@@ -79,7 +99,7 @@ function renderStudents(classIndex) {
         studentItem.textContent = eleve.nom;
 
         const deleteStudentButton = document.createElement('button');
-        deleteStudentButton.textContent = 'Supprimer Élève';
+        deleteStudentButton.textContent = '-';
         deleteStudentButton.classList.add('delete-student-btn');
         deleteStudentButton.addEventListener('click', () => {
             classe.eleves.splice(studentIndex, 1);
@@ -87,60 +107,13 @@ function renderStudents(classIndex) {
             renderStudents(classIndex);
         });
 
-        const studentDetailsContainer = document.createElement('div');
-        studentDetailsContainer.classList.add('student-details');
-
-        studentItem.addEventListener('click', () => renderDetentions(classIndex, studentIndex));
-        studentDetailsContainer.appendChild(studentItem);
-        studentDetailsContainer.appendChild(deleteStudentButton);
-        studentsList.appendChild(studentDetailsContainer);
+        studentItem.appendChild(deleteStudentButton);
+        studentsList.appendChild(studentItem);
     });
 
     app.appendChild(backButton);
     app.appendChild(addStudentButton);
     app.appendChild(studentsList);
-}
-
-function renderDetentions(classIndex, studentIndex) {
-    const classe = data.classes[classIndex];
-    const eleve = classe.eleves[studentIndex];
-
-    app.innerHTML = `<h1>${eleve.nom}</h1>`;
-
-    const backButton = document.createElement('button');
-    backButton.textContent = 'Retour aux Élèves';
-    backButton.addEventListener('click', () => renderStudents(classIndex));
-
-    const detentionInfo = document.createElement('p');
-    detentionInfo.textContent = `Heures de colle : ${eleve.heuresDeColle}`;
-
-    const addDetentionButton = document.createElement('button');
-    addDetentionButton.textContent = '+1h de colle';
-    addDetentionButton.addEventListener('click', () => {
-        const currentDate = new Date();
-        const formattedDate = `${currentDate.getHours()}:${currentDate.getMinutes()} ${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
-        
-        eleve.heuresDeColle++;
-        eleve.historiqueColles.push(`+1 heure de colle ${formattedDate}`);
-        saveData();
-        renderDetentions(classIndex, studentIndex);
-    });
-
-    const detentionHistoryTitle = document.createElement('h3');
-    detentionHistoryTitle.textContent = 'Historique des heures de colle';
-
-    const detentionHistoryList = document.createElement('ul');
-    eleve.historiqueColles.forEach(colle => {
-        const colleItem = document.createElement('li');
-        colleItem.textContent = colle;
-        detentionHistoryList.appendChild(colleItem);
-    });
-
-    app.appendChild(backButton);
-    app.appendChild(detentionInfo);
-    app.appendChild(addDetentionButton);
-    app.appendChild(detentionHistoryTitle);
-    app.appendChild(detentionHistoryList);
 }
 
 loadData();
