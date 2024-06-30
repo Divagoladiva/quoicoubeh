@@ -73,7 +73,7 @@ function renderClassDetails(classIndex) {
     addStudentButton.addEventListener('click', () => {
         const studentName = prompt('Nom de l\'élève :');
         if (studentName) {
-            classe.eleves.push({ nom: studentName, heuresDeColle: 0 });
+            classe.eleves.push({ nom: studentName, heuresDeColle: 0, historiqueColles: [] });
             saveData();
             renderClassDetails(classIndex);
         }
@@ -126,9 +126,13 @@ function renderStudentDetails(classIndex, studentIndex) {
     const addDetentionButton = document.createElement('button');
     addDetentionButton.textContent = '+1h';
     addDetentionButton.addEventListener('click', () => {
+        const currentDate = new Date();
+        const formattedDate = `${currentDate.getHours()}:${currentDate.getMinutes()} ${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
+        
         eleve.heuresDeColle++;
+        eleve.historiqueColles.push(`+1 heure de colle ${formattedDate}`);
         saveData();
-        detentionInfo.textContent = `Heures de colle : ${eleve.heuresDeColle}`;
+        renderStudentDetails(classIndex, studentIndex);
     });
 
     const removeDetentionButton = document.createElement('button');
@@ -137,7 +141,7 @@ function renderStudentDetails(classIndex, studentIndex) {
         if (eleve.heuresDeColle > 0) {
             eleve.heuresDeColle--;
             saveData();
-            detentionInfo.textContent = `Heures de colle : ${eleve.heuresDeColle}`;
+            renderStudentDetails(classIndex, studentIndex);
         }
     });
 
@@ -153,9 +157,22 @@ function renderStudentDetails(classIndex, studentIndex) {
     optionsContainer.appendChild(removeDetentionButton);
     optionsContainer.appendChild(deleteStudentButton);
 
+    // Affichage de l'historique des heures de colle
+    const historiqueTitle = document.createElement('h3');
+    historiqueTitle.textContent = 'Historique des heures de colle';
+
+    const historiqueList = document.createElement('ul');
+    eleve.historiqueColles.forEach(colle => {
+        const colleItem = document.createElement('li');
+        colleItem.textContent = colle;
+        historiqueList.appendChild(colleItem);
+    });
+
     app.appendChild(backButton);
     app.appendChild(detentionInfo);
     app.appendChild(optionsContainer);
+    app.appendChild(historiqueTitle);
+    app.appendChild(historiqueList);
 }
 
 loadData();
